@@ -1,0 +1,78 @@
+#!/bin/bash
+
+#examples:
+#bored
+#excited
+#not interested
+#going to be bored
+
+#cooking
+#happy
+#dumb
+
+function sayAndWrite {
+	if [ "$vflag" ]
+	then
+	  echo $*
+	fi
+	if [ -z "${sflag}" ]
+	then
+	  say $*
+	fi
+}
+
+function usage {
+	printf "Usage: %s: [-v] [-s] words\n" $(basename $0) >&2
+	printf "\n"
+	printf "Example usage:\n"
+	printf "%s -v going to be bored\n" $(basename $0) >&2
+	printf "will say and write the words\n"
+	printf "\n"
+	printf "%s -s happy\n" $(basename $0) >&2
+	printf "will write the words but will remain silent\n"
+	printf "the words provided should be in first person\n"
+	printf "if you think of words that don't fit this model let me know at: \n"
+	exit 2
+}
+
+vflag=""
+sflag=""
+while getopts 'vsh' OPTION
+do
+  case $OPTION in
+  v)	vflag=1
+		;;
+  s)	sflag=1
+		;;
+  h)	usage
+		;;
+  ?)	usage
+		;;
+  esac
+done
+shift $(($OPTIND - 1))
+
+# must output something, so just set vflag to 1
+if [[ -z $vflag  ]] && [[ -n "${sflag}" ]]
+then
+  vflag=1
+fi
+
+# if they didn't put a string to say
+if [[ -z $* ]]
+then
+  usage
+fi
+
+sayAndWrite "I am $*"
+sayAndWrite "You are $*"
+sayAndWrite "We are $*"
+
+# for the last one if it ends in ed, it should probably be ing?
+if [[ `expr "$*" : '.*ed$'` == 0 ]]
+then 
+	sayAndWrite "This is $*"
+else 
+	temp=$*
+	sayAndWrite "This is" ${temp:0:${#temp}-2}ing
+fi
