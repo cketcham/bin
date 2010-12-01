@@ -22,12 +22,16 @@ html = urllib2.urlopen(url).read()
 authorcss = re.findall(full_css_regex,html)
 
 # find the users which have already been added
-csshtml = urllib2.urlopen(cssurl).read()
+txheaders = {   
+    'Accept-Language': 'en-us',
+    'Cache-Control': 'max-age=0',
+}
+req = urllib2.Request(cssurl, None, txheaders)
+csshtml = urllib2.urlopen(req).read()
 users = set(re.findall(username_regex,csshtml))
-users.add('your_username')
 
 # this checks for duplicates
-newauthors = set()
+newauthors = set(['your_username'])
 
 # print out new authors
 for author in authorcss:
